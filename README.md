@@ -38,7 +38,19 @@ PY_TARGET='len' ARG_ADAPTER='[.]' python -m rmq_py_caller < data.ndjson
 ```
 
 will compute the length of each array listed in the [newline-delimited
-JSON][ndjson] file `data.ndjson`.
+JSON][ndjson] file `data.ndjson`. `ARG_ADAPTER` should be an array which
+arranges the arguments to `PY_TARGET`. To illustrate, here's a slightly more
+involved example where `PY_TARGET` takes two arguments:
+
+```sh
+PY_SETUP='from operator import add' \
+    PY_TARGET=add \
+    ARG_ADAPTER='[.a, .b]' \
+    python -m rmq_py_caller < data.ndjson
+```
+
+This setup will, for each _object_ in `data.ndjson`, compute the sum of the
+object's `a` and `b` attributes.
 
 [ndjson]: http://ndjson.org
 
