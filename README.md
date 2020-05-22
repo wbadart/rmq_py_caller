@@ -93,11 +93,11 @@ By default, rmq_py_caller publishes return value of `PY_TARGET` to the given
 result. `OUTPUT_ADAPTER` is a `jq` program which takes a JSON object with two
 keys, `result` (return value of `PY_TARGET`) and `orig` (the input data), and
 returns the desired result for publishing. For example, you can enrich the
-input object with the result with a [merge operation][merge] (`+`):
+input object with the result with a [merge operation][merge] (`*`):
 
 ```sh
 docker run --rm -it \
-    -e OUTPUT_ADAPTER='.orig + {len: .result}' \
+    -e OUTPUT_ADAPTER='.orig * {enrichments: {num_keys: .result}}' \
     -e PY_TARGET=len \
     -e ARG_ADAPTER='[.]' \
     -e INPUT_QUEUE=data_in \
@@ -110,3 +110,30 @@ Note in this case that inputs should be objects so that `orig` can be merged
 with the object `{len: ...}`.
 
 [merge]: https://stedolan.github.io/jq/manual/#Addition:+
+
+Finally, before I refer you to the `examples/` directory, here's a sample
+`docker-compose.yml` file you could use to run the above as a Docker service:
+
+```yaml
+version: "3.4"
+services:
+  my_len_enrichment:
+    image: wbadart/rmq_py_caller
+    environment:
+      OUTPUT_ADAPTER: >-
+        orig * {
+          enrichments: {
+            num_keys: .result
+          }
+        }
+      PY_TARGET: "len"
+      ARG_ADAPTER: "[.]"
+      INPUT_QUEUE: data_in
+      OUTPUT_EXCHANGE: data_out
+      RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"
+```
+
+I use a YAML [multi-line string][multi] here to show how you might handle more
+involved `OUTPUT_ADAPTER`s or `ARG_ADAPTER`s.
+
+[multi]: https://yaml-multiline.info
