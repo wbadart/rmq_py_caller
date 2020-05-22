@@ -80,6 +80,20 @@ to use, we can give it straight to rmq_py_caller:
 PY_SETUP='from contextmanager import UserDB' \
     PY_TARGET='UserDB' \
     ARG_ADAPTER='[.username, .info.favorite_number]' \
+    CTX_INIT_ARGS='' \
+    python -m rmq_py_caller
+```
+
+Note, by setting `CTX_INIT_ARGS`, even though we don't provide a value, we tell
+rmq_py_caller to initialize the context before entering it. If we wanted to
+provide keyword arguments to `UserDB.__init__`, we'd put them there. For
+instance:
+
+```sh
+PY_SETUP='from contextmanager import UserDB' \
+    PY_TARGET='UserDB' \
+    ARG_ADAPTER='[.username, .info.favorite_number]' \
+    CTX_INIT_ARGS='{"db_path": "other.json"}' \
     python -m rmq_py_caller
 ```
 
@@ -111,14 +125,3 @@ You can really get creative with `__exit__`. For example, you could have
 `query` collect metrics about when it's called and what it's called with, then
 send those metrics to Elasticsearch on shutdown (in this case though, you'd
 probably want a coroutine in `UserDB` to flush metrics updates periodically).
-
-Note, if we wanted to use a different user database, we can use `INIT_ARGS` to
-specify how rmq_py_caller should initialize `UserDB`:
-
-```sh
-PY_SETUP='from contextmanager import UserDB' \
-    PY_TARGET='UserDB' \
-    ARG_ADAPTER='[.username, .info.favorite_number]' \
-    INIT_ARGS='{"db_path": "other.json"}' \
-    python -m rmq_py_caller
-```
