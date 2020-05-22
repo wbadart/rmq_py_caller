@@ -11,13 +11,14 @@ Let's break it down:
 
 - `open("users.json")` constructs a context manager for handling the
   `"users.json"` file resource
-- `with ... as fs` calls the context manager's `__enter__` method, which takes
-  care of setup (in this case, acquiring a file handle from the OS), binding
-  the return value to `fs`.
+- `with ... as fs` calls the context manager's `__enter__` method &mdash; it
+  "enters" the context &mdash; which takes care of setup (in this case,
+  acquiring a file handle from the OS), binding `__enter__`'s return value to
+  `fs`.
 - Then Python runs the body of the `with` statement
-- If any code in the body raises an exception, Python calls the context
-  manager's `__exit__` method with information about the error, allowing the
-  context manager to perform an cleanup (like releasing the file handle)
+- If the body raises an uncaught exception, Python calls the context manager's
+  `__exit__` method with information about the error, allowing the context
+  manager to perform an cleanup (like releasing the file handle)
 - If no exceptions are raised, Python calls `__exit__` after the last line of
   the body
   
