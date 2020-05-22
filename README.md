@@ -60,8 +60,7 @@ Processing JSON data from stdin is useful for debugging, but you're probably
 here because you want to process JSON data from RabbitMQ. If this is the case,
 the provided Docker image is the way to go.
 
-The container respects the environment variables listed above, and also
-expects:
+The container uses the environment variables listed above, and also expects:
 
 Environment Variable | Description
 ---------------------|------------
