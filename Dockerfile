@@ -14,4 +14,6 @@ WORKDIR /app
 COPY . .
 RUN pip install .
 
+ENV OUTPUT_ADAPTER ".result"
+
 CMD /app/entrypoint.sh
