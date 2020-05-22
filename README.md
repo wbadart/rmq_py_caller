@@ -1,4 +1,3 @@
-
 # rmq_py_caller
 
 Call a Python function on JSON from [RabbitMQ][rmq]. Supports [context
@@ -85,4 +84,6 @@ docker run --rm -it \
 ```
 
 will, for each array posted to the `data_in` queue, compute its length and
-publish the result to the `data_out` exchange.
+publish the result to the `data_out` exchange. Note that inside a container,
+`host.docker.internal` resolves to the IP address of the Docker host; you can
+use it to access services you'd get via `localhost` outside the container.
