@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "rmq_pyctx_caller"
+version = "0.1.0"
+description = ""
+authors = ["Will Badart <badart_william@bah.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+jq = "^1.0.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+pylint = "^2.5.2"
+jedi = "^0.17.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
