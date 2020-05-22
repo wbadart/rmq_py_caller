@@ -3,6 +3,9 @@ we'd like to hook up to RabbitMQ, `length_of_longest_element`. First, let's
 spin it up with rmq_py_caller (sans RabbitMQ) with a little sample data:
 
 ```
+$ pwd
+/path/to/rmq_py_caller/examples/single_file
+
 $ PY_SETUP='from single_file import length_of_longest_element' \
     PY_TARGET=length_of_longest_element \
     ARG_ADAPTER='[.]' \
