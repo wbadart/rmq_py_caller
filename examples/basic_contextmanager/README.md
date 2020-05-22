@@ -32,6 +32,9 @@ database:
 class UserDB:
     """Manage the user/ favorite number database."""
 
+    def __init__(self, db_path="users.json"):
+        self.db_path = db_path
+
     def query(self, name, number):
         """
         If the user is in the database, add `number` to their favorite number,
@@ -74,14 +77,11 @@ Because the context manager's `__enter__` method returns the function we want
 to use, we can give it straight to rmq_py_caller:
 
 ```sh
-PY_SETUP='from contextmanager import ACTIVE_MANAGER' \
-    PY_TARGET='ACTIVE_MANAGER' \
+PY_SETUP='from contextmanager import UserDB' \
+    PY_TARGET='UserDB' \
     ARG_ADAPTER='[.username, .info.favorite_number]' \
     python -m rmq_py_caller
 ```
-
-Note that we're using `ACTIVE_MANAGER` to point to an _instance_ of `UserDB`,
-rather than using the class itself.
 
 rmq_py_caller is now waiting for input. Let's try pasting in this object to
 simulate a message from RabbitMQ:
@@ -111,3 +111,14 @@ You can really get creative with `__exit__`. For example, you could have
 `query` collect metrics about when it's called and what it's called with, then
 send those metrics to Elasticsearch on shutdown (in this case though, you'd
 probably want a coroutine in `UserDB` to flush metrics updates periodically).
+
+Note, if we wanted to use a different user database, we can use `INIT_ARGS` to
+specify how rmq_py_caller should initialize `UserDB`:
+
+```sh
+PY_SETUP='from contextmanager import UserDB' \
+    PY_TARGET='UserDB' \
+    ARG_ADAPTER='[.username, .info.favorite_number]' \
+    INIT_ARGS='{"db_path": "other.json"}' \
+    python -m rmq_py_caller
+```
