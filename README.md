@@ -137,3 +137,6 @@ I use a YAML [multi-line string][multi] here to show how you might handle more
 involved `OUTPUT_ADAPTER`s or `ARG_ADAPTER`s.
 
 [multi]: https://yaml-multiline.info
+
+Ok, that's it for the README. Please check out [`examples/`](./examples) for
+further instruction and inspiration.
