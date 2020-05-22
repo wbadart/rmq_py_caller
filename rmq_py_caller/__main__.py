@@ -21,9 +21,7 @@ def is_context_manager(ctx):
 
 
 def main():
-    """Setup the context manager at `CTX_MODULE.CTX_NAME` and call the callable
-    it yields for each line of stdin.
-    """
+    """Setup PY_TARGET and call it on each line of JSON on stdin."""
     exec(environ.get("PY_SETUP", ""))
     ctx = eval(environ["PY_TARGET"])
     if not is_context_manager(ctx):
