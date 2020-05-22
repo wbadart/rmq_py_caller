@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rmq_pyctx_caller"
+name = "rmq_py_caller"
 version = "0.1.0"
 description = ""
 authors = ["Will Badart <badart_william@bah.com>"]
