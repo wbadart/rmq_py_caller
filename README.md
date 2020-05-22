@@ -38,7 +38,34 @@ Environment Variable | Description
 [rabtap uri]: https://github.com/jandelgado/rabtap#broker-uri-specification
 [jq]: https://stedolan.github.io/jq
 
-For example:
+For example, let's say you have `my_proj/analyzer.py`:
+
+```py
+class my_proj_analyzer:
+    def run(self, func_arg1, func_arg2):
+        c = self.conn.cursor()
+        c.execute(
+            'SELECT * FROM user WHERE name=? AND joined>?',
+            (func_arg1, func_arg2),
+        )
+        return len(c.fetchall())
+        
+    def __enter__(self):
+        self.conn = sqlite3.connect("cool.db")
+        return self.run
+    
+    def __exit__(self, *_):
+        self.conn.close()
+        emit_closing_metrics(self)
+```
+
+and `my_proj/__init__.py`:
+
+```py
+from my_proj.analyzer import my_proj_analyzer
+```
+
+Then running:
 
 ```sh
 docker run --rm -it \
@@ -63,6 +90,10 @@ with my_proj_analyzer as func:
             func_arg2=msg["meta"]["timestamp"],
         )
 ```
+
+In other words, for every "query" routed to the `data_in` queue,
+`my_proj_analyzer` will count the users with the matching `name` who joined
+after the given `timestamp` and post the result to `data_out`.
 
 Note, you can record the above in a `docker-compose.yml` file:
 
