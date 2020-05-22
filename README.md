@@ -87,3 +87,26 @@ will, for each array posted to the `data_in` queue, compute its length and
 publish the result to the `data_out` exchange. Note that inside a container,
 `host.docker.internal` resolves to the IP address of the Docker host; you can
 use it to access services you'd get via `localhost` outside the container.
+
+By default, rmq_py_caller publishes return value of `PY_TARGET` to the given
+`OUTPUT_EXCHANGE`. Use the `OUTPUT_ADAPTER` variable to customize the published
+result. `OUTPUT_ADAPTER` is a `jq` program which takes a JSON object with two
+keys, `result` (return value of `PY_TARGET`) and `orig` (the input data), and
+returns the desired result for publishing. For example, you can enrich the
+input object with the result with a [merge operation][merge] (`+`):
+
+```sh
+docker run --rm -it \
+    -e OUTPUT_ADAPTER='.orig + {len: .result}' \
+    -e PY_TARGET=len \
+    -e ARG_ADAPTER='[.]' \
+    -e INPUT_QUEUE=data_in \
+    -e OUTPUT_EXCHANGE=data_out \
+    -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
+    wbadart/rmq_py_caller
+```
+
+Note in this case that inputs should be objects so that `orig` can be merged
+with the object `{len: ...}`.
+
+[merge]: https://stedolan.github.io/jq/manual/#Addition:+
