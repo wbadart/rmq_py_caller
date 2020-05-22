@@ -121,7 +121,7 @@ services:
     image: wbadart/rmq_py_caller
     environment:
       OUTPUT_ADAPTER: >-
-        orig * {
+        .orig * {
           enrichments: {
             num_keys: .result
           }
