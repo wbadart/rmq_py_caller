@@ -22,7 +22,7 @@ def is_context_manager(ctx):
 
 def main():
     """Setup PY_TARGET and call it on each line of JSON on stdin."""
-    exec(environ.get("PY_SETUP", ""))
+    exec(environ.get("PY_SETUP", ""), globals())
     ctx = eval(environ["PY_TARGET"])
     if not is_context_manager(ctx):
         ctx = nullcontext(ctx)

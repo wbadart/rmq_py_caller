@@ -33,4 +33,18 @@ services:
 ```
 
 This example takes an object with two network masks, and adds a field
-(`dst_subnet_of_src`) which records if one is a subnetwork of the other.
+(`dst_subnet_of_src`) which records if one is a subnetwork of the other. Try it
+out with input like this:
+
+```json
+{
+  "net": {
+    "src": {
+      "mask": "192.0.2.1/32"
+    },
+    "dst": {
+      "mask": "192.0.2.0/28"
+    }
+  }
+}
+```
