@@ -1,4 +1,4 @@
-This directory is a little Python package that uses [Scikit-Learn][sklean] to
+This directory is a little Python package that uses [Scikit-Learn][sklearn] to
 run a decision tree on data. Here's how you might plug it in to your data
 stream using rmq_py_caller.
 
@@ -27,9 +27,9 @@ PY_SETUP='from rmq_sklearn.predict import setup_inference' \
     python -m rmq_py_caller < data/sample.ndjson
 ```
 
-You should see some gnarly output with each fish entry enriched by a
-`"Prediction"` field. Now let's use Docker to stand up our fish prediction
-service. Skim `Dockerfile` and `docker-compose.yml`, `pip install
+You should see some gnarly output with each fish entry under `"result"` is
+enriched by a `"Prediction"` field. Now let's use Docker to stand up our fish
+prediction service. Skim `Dockerfile` and `docker-compose.yml`, `pip install
 docker-compose` if you don't have it, and run:
 
 ```sh
