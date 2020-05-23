@@ -18,7 +18,7 @@ Let's break it down:
 - Then Python runs the body of the `with` statement
 - If the body raises an uncaught exception, Python calls the context manager's
   `__exit__` method with information about the error, allowing the context
-  manager to perform an cleanup (like releasing the file handle)
+  manager to perform any cleanup (like releasing the file handle)
 - If no exceptions are raised, Python calls `__exit__` after the last line of
   the body
   
@@ -74,8 +74,8 @@ $ cat users.json
 {"alice": 1234, "bob": 5678}
 ```
 
-Because the context manager's `__enter__` method returns the function we want
-to use, we can give it straight to rmq_py_caller:
+Because `UserDB`'s `__enter__` method returns the function we want to use, we
+can simply provide rmq_py_caller an instance of `UserDB`:
 
 ```sh
 PY_SETUP='from contextmanager import UserDB' \
