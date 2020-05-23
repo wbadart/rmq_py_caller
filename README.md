@@ -55,7 +55,8 @@ PY_SETUP='from operator import add' \
 ```
 
 This setup will, for each object in `data.ndjson`, compute the sum of the
-object's `a` and `b` attributes.
+object's `a` and `b` attributes (corresponding to the call `add(obj["a"],
+obj["b"])`).
 
 [ndjson]: http://ndjson.org
 
@@ -111,7 +112,7 @@ docker run --rm -it \
 ```
 
 Note in this case that inputs should be objects so that `orig` can be merged
-with the object `{len: ...}`.
+with the object `{enrichments: {num_keys: ...}}`.
 
 [merge]: https://stedolan.github.io/jq/manual/#Addition:+
 
