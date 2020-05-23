@@ -38,28 +38,23 @@ class UserDB:
 
     def query(self, name, number):
         """
-        If the user is in the database, add `number` to their favorite number,
-        otherwise, add the corresponding entry.
-        
-        Return True if a new user was created, else False.
+        Record/ update a user's favorite number. Return True if a new user was
+        created, else return False.
         """
-        if name in self.db:
-            self.db[name] += number
-            return False
-        else:
-            self.db[name] = number
-            return True
+        is_new_user = name not in self.db
+        self.db[name] = number
+        return is_new_user
 
     def __enter__(self):
         # Setup the database needed by `query`
-        with open("users.json") as fs:
+        with open(self.db_path) as fs:
             self.db = json.load(fs)
         # return the method we want rmq_py_caller to use
         return self.query
 
     def __exit__(self, *_):
         # Flush the DB updates
-        with open("users.json", "w") as fs:
+        with open(self.db_path, "w") as fs:
             json.dump(self.db, fs)
 ```
 
@@ -120,10 +115,10 @@ expected changes have been persisted:
 
 ```sh
 $ cat users.json
-{"alice": 1316, "bob": 5678, "jo": 42}
+{"alice": 82, "bob": 5678, "jo": 42}
 ```
 
-We see our new user `"jo"` as well as `"alice"`'s incremented favorite number.
+We see our new user `"jo"` as well as `"alice"`'s updated favorite number.
 
 You can really get creative with `__exit__`. For example, you could have
 `query` collect metrics about when it's called and what it's called with, then

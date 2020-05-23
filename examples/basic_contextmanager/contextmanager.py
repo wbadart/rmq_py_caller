@@ -17,17 +17,12 @@ class UserDB:
 
     def query(self, name, number):
         """
-        If the user is in the database, add `number` to their favorite number,
-        otherwise, add the corresponding entry.
-
-        Return True if a new user was created, else False.
+        Record/ update a user's favorite number. Return True if a new user was
+        created, else return False.
         """
-        if name in self.db:
-            self.db[name] += number
-            return False
-        else:
-            self.db[name] = number
-            return True
+        is_new_user = name not in self.db
+        self.db[name] = number
+        return is_new_user
 
     def __enter__(self):
         # Setup the database needed by `query`
