@@ -14,7 +14,9 @@ services:
         PY_SETUP: |
           import logging
           import ipaddress
+
           def processor(src_net, dst_net):
+              logging.info("Got %s and %s", src_net, dst_net)
               src_net, dst_net = map(ipaddress.ip_network, (src_net, dst_net))
               return dst_net.subnet_of(src_net)
           
