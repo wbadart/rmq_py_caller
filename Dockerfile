@@ -11,7 +11,9 @@ RUN apt update \
         && chmod +x /usr/local/bin/jq
 
 WORKDIR /app
-COPY . .
+COPY entrypoint.sh pyproject.toml ./
+RUN mkdir ./rmq_py_caller
+COPY rmq_py_caller/ ./rmq_py_caller/
 RUN pip install .
 
 ENV OUTPUT_ADAPTER ".result"
