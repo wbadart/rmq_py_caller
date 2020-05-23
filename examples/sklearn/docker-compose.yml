@@ -7,6 +7,11 @@ services:
       PY_SETUP: "from rmq_sklearn.predict import setup_inference"
       PY_TARGET: "setup_inference(path='/models/tree.joblib')"
       ARG_ADAPTER: "[.]"
+      OUTPUT_ADAPTER: >-
+        .orig as $orig | .result as $result |
+        [ range(.result | length)
+        | $orig[.] * { Prediction: $result[.] }
+        ]
       INPUT_QUEUE: data_in
       OUTPUT_EXCHANGE: data_out
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"

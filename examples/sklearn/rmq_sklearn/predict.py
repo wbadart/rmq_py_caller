@@ -14,8 +14,7 @@ COLUMNS = ["Weight", "Length1", "Length2", "Length3", "Height", "Width"]
 
 def predict(data, model):
     df = pd.DataFrame.from_records(data, columns=COLUMNS)
-    df["Prediction"] = model.predict(df)
-    return df.to_dict(orient="records")
+    return model.predict(df).tolist()
 
 
 def setup_inference(path="tree.joblib"):

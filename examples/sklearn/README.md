@@ -26,11 +26,14 @@ PY_SETUP='from rmq_sklearn.predict import setup_inference' \
     python -m rmq_py_caller < data/sample.ndjson
 ```
 
-You should see some gnarly output with each fish entry under `"result"` is
-enriched by a `"Prediction"` field. Now let's use Docker to stand up our fish
-prediction service. Skim `rmq_sklearn/predict.py`, `Dockerfile` and
-`docker-compose.yml`, `pip install docker-compose` if you don't have it, and
-run:
+You should see all the predictions under the `"result"` field of the output.
+This will be rejoined with the input data by the `OUTPUT_ADAPTER`. In this
+case, since the `predict` function has access to the entire input object, we
+could have just as easily done the enrichment there.
+
+Now let's use Docker to stand up our fish prediction service. Skim
+`rmq_sklearn/predict.py`, `Dockerfile` and `docker-compose.yml`, `pip install
+docker-compose` if you don't have it, and run:
 
 ```sh
 docker-compose up
