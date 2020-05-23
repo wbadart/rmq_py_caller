@@ -11,6 +11,7 @@ import sys
 from contextlib import nullcontext
 from importlib import import_module
 from os import environ
+from threading import Thread
 
 import jq
 
@@ -19,6 +20,12 @@ def is_context_manager(ctx):
     """Return true if `ctx` has both `__enter__` and `__exit__` attributes."""
     return hasattr(ctx, "__enter__") and hasattr(ctx, "__exit__")
 
+
+def print_results(func, args, orig):
+    """Call `func(**args)` and print the resulting JSON."""
+    res = func(*args)
+    json.dump({"result": res, "orig": orig}, fp=sys.stdout)
+    print()
 
 def main():
     """Setup PY_TARGET and call it on each line of JSON on stdin."""
@@ -31,9 +38,7 @@ def main():
         for payload in sys.stdin:
             obj = json.loads(payload)
             args = adapter.input(obj).first()
-            res = func(*args)
-            json.dump({"result": res, "orig": obj}, fp=sys.stdout)
-            print()
+            Thread(target=print_results, args=(func, args, obj)).start()
 
 
 if __name__ == "__main__":
