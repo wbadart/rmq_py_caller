@@ -6,10 +6,11 @@ services:
     environment:
       PY_SETUP: "from rmq_sklearn.predict import setup_inference"
       PY_TARGET: "setup_inference(path='/models/tree.joblib')"
+      # Note the double '$' to prevent docker-compose from doing variable substitution
       OUTPUT_ADAPTER: >-
-        .orig as $orig | .result as $result |
-        [ range(.result | length) | . as $i |
-            $orig[$i] * { Prediction: $result[$i] }
+        .orig as $$orig | .result as $$result |
+        [ range(.result | length) | . as $$i |
+            $$orig[$$i] * { Prediction: $$result[$$i] }
             ]
       INPUT_QUEUE: data_in
       OUTPUT_EXCHANGE: data_out
