@@ -55,3 +55,23 @@ try copying and pasting the contents of `sample.ndjson` to the **Publish
 message** section of `data_in`. Now click over to the queue you bound to
 `data_out`, **Get messages**, and see that your fish predictions have been
 published.
+
+Final side note: as our fish prediction service gains users, we can scale
+horizontally pretty trivially:
+
+```yaml
+version: "3.4"
+services:
+  fish_prediction:
+    build: .
+    image: fish_prediction
+    deploy:
+      replicas: 10
+    environment:
+      # ...
+    volumes:
+      # ...
+```
+
+Each replica will be watching the same input queue, so messages to that queue
+will be naturally distributed among the 10 consumers.
