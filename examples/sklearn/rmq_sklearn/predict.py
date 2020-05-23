@@ -4,8 +4,6 @@ Run the fish AI on some input data.
 created: MAY 2020
 """
 
-from argparse import ArgumentParser
-from contextlib import contextmanager
 from functools import partial
 
 import joblib
@@ -20,7 +18,6 @@ def predict(data, model):
     return df.to_dict(orient="records")
 
 
-@contextmanager
 def setup_inference(path="tree.joblib"):
     model = joblib.load(path)
-    yield partial(predict, model=model)
+    return partial(predict, model=model)

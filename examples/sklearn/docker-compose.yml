@@ -5,9 +5,8 @@ services:
     image: fish_prediction
     environment:
       PY_SETUP: "from rmq_sklearn.predict import setup_inference"
-      PY_TARGET: "setup_inference"
+      PY_TARGET: "setup_inference(path='/models/tree.joblib')"
       ARG_ADAPTER: "[.]"
-      CTX_INIT_ARGS: '{"path": "/models/tree.joblib"}'
       INPUT_QUEUE: data_in
       OUTPUT_EXCHANGE: data_out
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"

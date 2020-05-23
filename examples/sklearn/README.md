@@ -4,7 +4,7 @@ stream using rmq_py_caller.
 
 [sklearn]: https://scikit-learn.org/stable/index.html
 
-The dataset comes from [Kaggle][data].
+_(The dataset comes from [Kaggle][data].)_
 
 [data]: https://www.kaggle.com/aungpyaeap/fish-market
 
@@ -21,16 +21,16 @@ command-line invocation of rmq_py_caller:
 
 ```sh
 PY_SETUP='from rmq_sklearn.predict import setup_inference' \
-    PY_TARGET=setup_inference \
+    PY_TARGET='setup_inference()' \
     ARG_ADAPTER='[.]' \
-    CTX_INIT_ARGS='' \
     python -m rmq_py_caller < data/sample.ndjson
 ```
 
 You should see some gnarly output with each fish entry under `"result"` is
 enriched by a `"Prediction"` field. Now let's use Docker to stand up our fish
-prediction service. Skim `Dockerfile` and `docker-compose.yml`, `pip install
-docker-compose` if you don't have it, and run:
+prediction service. Skim `rmq_sklearn/predict.py`, `Dockerfile` and
+`docker-compose.yml`, `pip install docker-compose` if you don't have it, and
+run:
 
 ```sh
 docker-compose up

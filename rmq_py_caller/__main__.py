@@ -24,11 +24,7 @@ def main():
     """Setup PY_TARGET and call it on each line of JSON on stdin."""
     exec(environ.get("PY_SETUP", ""))
     ctx = eval(environ["PY_TARGET"])
-    if "CTX_INIT_ARGS" in environ:
-        # Initialize `ctx` if the user says so by setting `CTX_INIT_ARGS`
-        ctx = ctx(**json.loads(environ["CTX_INIT_ARGS"] or "{}"))
     if not is_context_manager(ctx):
-        # If we're still not a context manager, wrap in null context
         ctx = nullcontext(ctx)
     with ctx as func:
         adapter = jq.compile(environ["ARG_ADAPTER"])

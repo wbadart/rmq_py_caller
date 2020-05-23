@@ -25,17 +25,13 @@ The `try...finally` block ensures the cleanup gets run even if an exception was
 raised.
 
 This is a very lightweight approach to dependency injection for rmq_py_caller
-functions. In fact, it can be even shorter if no cleanup is required:
+functions. In fact, we don't even need a context manager if dependency
+injection (rather than resource management) is our only goal:
 
 ```py
-@contextmanager
 def setup_model():
     pretrained_model = my_framework.load_weights("path/to/model.dat")
-    yield partial(model_prediction, model=pretrained_model)
+    return partial(model_prediction, model=pretrained_model)
 ```
 
-Note: we'd need to set `CTX_INIT_ARGS` to use `setup_model`. Otherwise,
-rmq_py_caller won't initialize the context (calling `load_weights` and such)
-before trying to enter it.
-
-See [`examples/sklearn/`](../sklearn) for further elaboration on this approach.
+See [`examples/sklearn/`](../sklearn) for elaboration on this approach.

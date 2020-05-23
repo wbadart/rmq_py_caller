@@ -20,18 +20,17 @@ rmq_py_caller`, just make sure to set the following environment variables:
 
 Environment Variable | Description
 ---------------------|------------
-`PY_TARGET`       | The name of the function* to call
-`PY_SETUP`        | (_Optional_) Initialization code, such as importing the function
-`ARG_ADAPTER`     | A [`jq`][jq] program mapping input data to arguments
-`CTX_INIT_ARGS`   | (_Optional_) A JSON object with `**kwargs` for `PY_TARGET`'s initialization
+`PY_TARGET`   | The name of the function* to call
+`PY_SETUP`    | (_Optional_) Initialization code, such as importing the function
+`ARG_ADAPTER` | A [`jq`][jq] program mapping input data to `*args` list
 
 [jq]: https://stedolan.github.io/jq
 
 (* `PY_TARGET` can also identify a context manager, provided its `__enter__`
 method returns the function of interest. This is useful if the function
 requires some setup before running, such as loading a data file, or teardown
-afterwards. Set `CTX_INIT_ARGS` to initialize the context before entering it.
-See [`examples/basic_contextmanager/`][basic_contextmanager].)
+afterwards. See [`examples/basic_contextmanager/`][basic_contextmanager] for
+details.)
 
 [basic_contextmanager]: ./examples/basic_contextmanager
 

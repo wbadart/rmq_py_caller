@@ -79,24 +79,23 @@ to use, we can give it straight to rmq_py_caller:
 
 ```sh
 PY_SETUP='from contextmanager import UserDB' \
-    PY_TARGET='UserDB' \
+    PY_TARGET='UserDB()' \
     ARG_ADAPTER='[.username, .info.favorite_number]' \
-    CTX_INIT_ARGS='' \
     python -m rmq_py_caller
 ```
 
-Note, by setting `CTX_INIT_ARGS`, even though we don't provide a value, we tell
-rmq_py_caller to initialize the context before entering it. If we wanted to
-provide keyword arguments to `UserDB.__init__`, we'd put them there. For
-instance:
+If we needed to customize our `UserDB` instance, we can simply initialize it
+with different values, e.g.:
 
 ```sh
 PY_SETUP='from contextmanager import UserDB' \
-    PY_TARGET='UserDB' \
+    PY_TARGET='UserDB(db_path="other.json")' \
     ARG_ADAPTER='[.username, .info.favorite_number]' \
-    CTX_INIT_ARGS='{"db_path": "other.json"}' \
     python -m rmq_py_caller
 ```
+
+This `ARG_ADAPTER` will pass the `username` property of input data as the first
+argument to `query`, and `info.favorite_number` as the second.
 
 rmq_py_caller is now waiting for input. Let's try pasting in this object to
 simulate a message from RabbitMQ:
