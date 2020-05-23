@@ -49,7 +49,7 @@ arguments:
 
 ```sh
 PY_SETUP='from operator import add' \
-    PY_TARGET=add \
+    PY_TARGET='add' \
     ARG_ADAPTER='[.a, .b]' \
     python -m rmq_py_caller < data.ndjson
 ```
@@ -81,10 +81,10 @@ To continue the `len` example from above:
 
 ```sh
 docker run --rm -it \
-    -e PY_TARGET=len \
-    -e INPUT_QUEUE=data_in \
-    -e OUTPUT_EXCHANGE=data_out \
-    -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
+    -e PY_TARGET='len' \
+    -e INPUT_QUEUE='data_in' \
+    -e OUTPUT_EXCHANGE='data_out' \
+    -e RABTAP_AMQPURI='amqp://guest:guest@host.docker.internal:5672/' \
     wbadart/rmq_py_caller
 ```
 
@@ -103,10 +103,10 @@ input object with the result with a [merge operation][merge] (`*`):
 ```sh
 docker run --rm -it \
     -e OUTPUT_ADAPTER='.orig * {enrichments: {num_keys: .result}}' \
-    -e PY_TARGET=len \
-    -e INPUT_QUEUE=data_in \
-    -e OUTPUT_EXCHANGE=data_out \
-    -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
+    -e PY_TARGET='len' \
+    -e INPUT_QUEUE='data_in' \
+    -e OUTPUT_EXCHANGE='data_out' \
+    -e RABTAP_AMQPURI='amqp://guest:guest@host.docker.internal:5672/' \
     wbadart/rmq_py_caller
 ```
 
@@ -131,8 +131,8 @@ services:
           }
         }
       PY_TARGET: "len"
-      INPUT_QUEUE: data_in
-      OUTPUT_EXCHANGE: data_out
+      INPUT_QUEUE: "data_in"
+      OUTPUT_EXCHANGE: "data_out"
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"
 ```
 

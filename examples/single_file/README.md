@@ -7,7 +7,7 @@ $ pwd
 /path/to/rmq_py_caller/examples/single_file
 
 $ PY_SETUP='from single_file import length_of_longest_element' \
-    PY_TARGET=length_of_longest_element \
+    PY_TARGET='length_of_longest_element' \
     python -m rmq_py_caller < sample.ndjson
 {"result": 6, "orig": ["foo", "barbaz"]}
 {"result": 5, "orig": [[1, 2, 3, 4, 5], [6, 7, 8], [9]]}
@@ -24,9 +24,9 @@ a container. There are several ways to do this, such as creating a custom image
 ```sh
 docker run --rm -it -v $PWD:/src -w /src \
     -e PY_SETUP='from single_file import length_of_longest_element' \
-    -e PY_TARGET=length_of_longest_element \
-    -e INPUT_QUEUE=data_in \
-    -e OUTPUT_EXCHANGE=data_out \
-    -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
+    -e PY_TARGET='length_of_longest_element' \
+    -e INPUT_QUEUE='data_in' \
+    -e OUTPUT_EXCHANGE='data_out' \
+    -e RABTAP_AMQPURI='amqp://guest:guest@host.docker.internal:5672/' \
     wbadart/rmq_py_caller
 ```

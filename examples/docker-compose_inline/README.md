@@ -27,8 +27,8 @@ services:
           .orig * {
             dst_subnet_of_src: .result
           }
-        INPUT_QUEUE: data_in
-        OUTPUT_EXCHANGE: data_out
+        INPUT_QUEUE: "data_in"
+        OUTPUT_EXCHANGE: "data_out"
         RABTAP_AMQPURI: "amqp://guest:guest@rabbitmq-hostname:5672/"
 ```
 

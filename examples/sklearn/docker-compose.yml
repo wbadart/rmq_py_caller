@@ -12,8 +12,8 @@ services:
         [ range(.result | length) | . as $$i |
             $$orig[$$i] * { Prediction: $$result[$$i] }
             ]
-      INPUT_QUEUE: data_in
-      OUTPUT_EXCHANGE: data_out
+      INPUT_QUEUE: "data_in"
+      OUTPUT_EXCHANGE: "data_out"
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"
     volumes:
     - ${PWD}/tree.joblib:/models/tree.joblib
