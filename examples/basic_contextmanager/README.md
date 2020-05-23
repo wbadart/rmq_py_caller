@@ -25,9 +25,9 @@ Let's break it down:
 Using a context manager ensures that resources get cleaned up, even when errors
 are thrown.
 
-Let's suppose `users.json` is our user database. `contextmanager.py` defines a
-context manager that can be used to process incoming JSON data using this
-database:
+Let's suppose `users.json` is our user database.
+[`contextmanager.py`](./contextmanager.py) defines a context manager that can
+be used to process incoming JSON data using this database:
 
 ```py
 class UserDB:
@@ -112,6 +112,8 @@ try:
 {"username": "alice", "info": {"favorite_number": 82}}
 ```
 
+The result is `false` since `"alice"` was already a user.
+
 After pressing enter, press <kbd>Ctrl-d</kbd> to stop giving input to
 rmq_py_caller. If we check out user database again, we can see that the
 expected changes have been persisted:
@@ -120,6 +122,8 @@ expected changes have been persisted:
 $ cat users.json
 {"alice": 1316, "bob": 5678, "jo": 42}
 ```
+
+We see our new user `"jo"` as well as `"alice"`'s incremented favorite number.
 
 You can really get creative with `__exit__`. For example, you could have
 `query` collect metrics about when it's called and what it's called with, then
