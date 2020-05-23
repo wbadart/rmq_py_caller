@@ -16,6 +16,7 @@ RUN mkdir ./rmq_py_caller
 COPY rmq_py_caller/ ./rmq_py_caller/
 RUN pip install .
 
+ENV INPUT_ADAPTER ".Body | @base64d | fromjson"
 ENV OUTPUT_ADAPTER ".result"
 
 CMD /app/entrypoint.sh

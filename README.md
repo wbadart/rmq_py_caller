@@ -74,6 +74,7 @@ Environment Variable | Description
 `OUTPUT_EXCHANGE`    | Exchange to which results are published
 `OUTPUT_ROUTING_KEY` | (_Optional_) Routing key with which to publish results
 `RABTAP_AMQPURI`     | Location of broker (see the [`rabtap`][rabtap uri] URI spec)
+`INPUT_ADAPTER`      | (_Optional_) Adjusts how RabbitMQ metadata is passed to Python
 `OUTPUT_ADAPTER`     | (_Default: `.result`_) `jq` post-processing program
 
 [rabtap uri]: https://github.com/jandelgado/rabtap#broker-uri-specification

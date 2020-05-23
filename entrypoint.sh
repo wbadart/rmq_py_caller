@@ -3,7 +3,7 @@
 set -e
 
 rabtap sub "$INPUT_QUEUE" --format=json-nopp \
-  | jq -cr --unbuffered ".Body | @base64d | fromjson" \
+  | jq -cr --unbuffered "$INPUT_ADAPTER" \
   | python -u -m rmq_py_caller \
   | jq -cr --unbuffered "$OUTPUT_ADAPTER" \
   | while read -r result; do
