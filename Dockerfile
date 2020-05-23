@@ -16,7 +16,6 @@ RUN mkdir ./rmq_py_caller
 COPY rmq_py_caller/ ./rmq_py_caller/
 RUN pip install .
 
-ENV ARG_ADAPTER "[.]"
 ENV OUTPUT_ADAPTER ".result"
 
 CMD /app/entrypoint.sh

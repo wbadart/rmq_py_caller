@@ -27,7 +27,7 @@ def main():
     if not is_context_manager(ctx):
         ctx = nullcontext(ctx)
     with ctx as func:
-        adapter = jq.compile(environ["ARG_ADAPTER"])
+        adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
         for payload in sys.stdin:
             obj = json.loads(payload)
             args = adapter.input(obj).first()
