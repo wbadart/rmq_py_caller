@@ -22,7 +22,7 @@ Environment Variable | Description
 ---------------------|------------
 `PY_TARGET`   | The name of the function* to call
 `PY_SETUP`    | (_Optional_) Initialization code, such as importing the function
-`ARG_ADAPTER` | A [`jq`][jq] program mapping input data to `*args` list
+`ARG_ADAPTER` | (_Default: `[.]`_) A [`jq`][jq] program mapping input data to `*args` list
 
 [jq]: https://stedolan.github.io/jq
 
@@ -37,13 +37,15 @@ details.)
 For example:
 
 ```sh
-PY_TARGET='len' ARG_ADAPTER='[.]' python -m rmq_py_caller < data.ndjson
+PY_TARGET='len' python -m rmq_py_caller < data.ndjson
 ```
 
 will compute the length of each array or object listed in the
 [newline-delimited JSON][ndjson] file `data.ndjson`. `ARG_ADAPTER` should be an
-array which arranges the arguments to `PY_TARGET`. To illustrate, here's a
-slightly more involved example where `PY_TARGET` takes two arguments:
+array which arranges the arguments to `PY_TARGET` (the default value, `[.]`,
+passes the whole input object as the first argument to `PY_TARGET`). To
+illustrate, here's a slightly more involved example where `PY_TARGET` takes two
+arguments:
 
 ```sh
 PY_SETUP='from operator import add' \
@@ -80,7 +82,6 @@ To continue the `len` example from above:
 ```sh
 docker run --rm -it \
     -e PY_TARGET=len \
-    -e ARG_ADAPTER='[.]' \
     -e INPUT_QUEUE=data_in \
     -e OUTPUT_EXCHANGE=data_out \
     -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
@@ -103,7 +104,6 @@ input object with the result with a [merge operation][merge] (`*`):
 docker run --rm -it \
     -e OUTPUT_ADAPTER='.orig * {enrichments: {num_keys: .result}}' \
     -e PY_TARGET=len \
-    -e ARG_ADAPTER='[.]' \
     -e INPUT_QUEUE=data_in \
     -e OUTPUT_EXCHANGE=data_out \
     -e RABTAP_AMQPURI=amqp://guest:guest@host.docker.internal:5672/ \
@@ -131,7 +131,6 @@ services:
           }
         }
       PY_TARGET: "len"
-      ARG_ADAPTER: "[.]"
       INPUT_QUEUE: data_in
       OUTPUT_EXCHANGE: data_out
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"

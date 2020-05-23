@@ -22,7 +22,6 @@ command-line invocation of rmq_py_caller:
 ```sh
 PY_SETUP='from rmq_sklearn.predict import setup_inference' \
     PY_TARGET='setup_inference()' \
-    ARG_ADAPTER='[.]' \
     python -m rmq_py_caller < data/sample.ndjson
 ```
 
