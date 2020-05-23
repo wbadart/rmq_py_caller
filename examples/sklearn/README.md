@@ -31,8 +31,9 @@ case, since the `predict` function has access to the entire input object, we
 could have just as easily done the enrichment there.
 
 Now let's use Docker to stand up our fish prediction service. Skim
-`rmq_sklearn/predict.py`, `Dockerfile` and `docker-compose.yml`, `pip install
-docker-compose` if you don't have it, and run:
+[`rmq_sklearn/predict.py`](./rmq_sklearn/predict.py),
+[`Dockerfile`](./Dockerfile) and[ `docker-compose.yml`](./docker-compose.yml),
+`pip install docker-compose` if you don't have it, and run:
 
 ```sh
 docker-compose up
