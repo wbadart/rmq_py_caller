@@ -12,9 +12,12 @@ import sys
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import nullcontext
 from os import environ
+from queue import Queue
 from threading import Thread
 
 import jq
+
+from rmq_py_caller.worker import worker
 
 
 def is_context_manager(ctx):
@@ -22,26 +25,21 @@ def is_context_manager(ctx):
     return hasattr(ctx, "__enter__") and hasattr(ctx, "__exit__")
 
 
-def apply_func(func, args, orig):
-    """Call `func(**args)` and print the resulting JSON."""
-    res = func(*args)
-    json.dump({"result": res, "orig": orig}, fp=sys.stdout)
-    print()
-
-
-async def main():
+def main():
     """Setup PY_TARGET and call it on each line of JSON on stdin."""
     exec(environ.get("PY_SETUP", ""), globals())
     ctx = eval(environ["PY_TARGET"])
     if not is_context_manager(ctx):
         ctx = nullcontext(ctx)
-    with ctx as func, ThreadPoolExecutor() as background_thread:
-        adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
-        for payload in sys.stdin:
-            obj = json.loads(payload)
-            args = adapter.input(obj).first()
-            background_thread.submit(apply_func, func, args, obj)
+
+    adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
+    queue = Queue()
+    Thread(target=worker, args=(queue, ctx, adapter), daemon=True).start()
+
+    for line in sys.stdin:
+        queue.put(line)
+    queue.put(None)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
