@@ -9,23 +9,24 @@ created: MAY 2020
 import json
 import sys
 from contextlib import nullcontext
-from importlib import import_module
 from os import environ
+from queue import Queue
 from threading import Thread
 
 import jq
 
-
-def is_context_manager(ctx):
-    """Return true if `ctx` has both `__enter__` and `__exit__` attributes."""
-    return hasattr(ctx, "__enter__") and hasattr(ctx, "__exit__")
+from rmq_py_caller.util import is_context_manager, joining
 
 
-def print_results(func, args, orig):
+def print_results(func, queue):
     """Call `func(**args)` and print the resulting JSON."""
-    res = func(*args)
-    json.dump({"result": res, "orig": orig}, fp=sys.stdout)
-    print()
+    while True:
+        args, orig = queue.get()
+        res = func(*args)
+        json.dump({"result": res, "orig": orig}, fp=sys.stdout)
+        print()
+        queue.task_done()
+
 
 def main():
     """Setup PY_TARGET and call it on each line of JSON on stdin."""
@@ -33,12 +34,13 @@ def main():
     ctx = eval(environ["PY_TARGET"])
     if not is_context_manager(ctx):
         ctx = nullcontext(ctx)
-    with ctx as func:
+    with ctx as func, joining(Queue()) as queue:
         adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
+        Thread(target=print_results, args=(func, queue), daemon=True).start()
         for payload in sys.stdin:
             obj = json.loads(payload)
             args = adapter.input(obj).first()
-            Thread(target=print_results, args=(func, args, obj)).start()
+            queue.put((args, obj))
 
 
 if __name__ == "__main__":
