@@ -7,5 +7,9 @@ rabtap sub "$INPUT_QUEUE" --format=json-nopp \
   | python -u -m rmq_py_caller \
   | jq -cr --unbuffered "$OUTPUT_ADAPTER" \
   | while read -r result; do
-      rabtap pub <(echo "$result") --exchange "$OUTPUT_EXCHANGE" --routingkey "$OUTPUT_ROUTING_KEY"
+      if [ "$PUBLISH_NULL" = 1 -o "$result" != null ]; then
+        rabtap pub <(echo "$result") \
+            --exchange "$OUTPUT_EXCHANGE" \
+            --routingkey "$OUTPUT_ROUTING_KEY"
+      fi
     done
