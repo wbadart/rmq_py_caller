@@ -15,13 +15,12 @@ from concurrent.futures import ThreadPoolExecutor
 __all__ = ["worker"]
 
 
-def worker(inputs, ctx, adapter, verbose):
+def worker(inputs, ctx, adapter):
     """
     Enter `ctx` and call the resulting function on each message on the queue
     `inputs`.
     """
     log = logging.getLogger(__name__)
-    log.setLevel([logging.WARN, logging.INFO, logging.DEBUG][verbose])
 
     async def _main():
         # _main is responsible for calling func. However, sometimes func might

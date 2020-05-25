@@ -36,8 +36,6 @@ def main():
         help="-v to include info, -vv to include debugging",
     )
     args = parser.parse_args()
-    log = logging.getLogger(__name__)
-    log.setLevel([logging.WARN, logging.INFO, logging.DEBUG][args.verbose])
 
     # If you're curious about the use exec/ eval here, please see the project
     # wiki for discussion.
@@ -45,7 +43,11 @@ def main():
     exec(environ.get("PY_SETUP", ""), globals())
     ctx = eval(environ["PY_TARGET"])
     # Wait until now to call basicConfig in case PY_SETUP wants to do it
-    logging.basicConfig()
+    if args.verbose:
+        logging.basicConfig(
+            level=[logging.WARN, logging.INFO, logging.DEBUG][args.verbose]
+        )
+    log = logging.getLogger(__name__)
     log.debug("Got PY_TARGET: %s", ctx)
 
     # Our worker will use ctx in a `with` statement shortly (for resource
@@ -62,7 +64,7 @@ def main():
     adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
     log.debug("Using ARG_ADAPTER: %s", adapter.program_string)
     queue = Queue()
-    worker_args = queue, ctx, adapter, args.verbose
+    worker_args = queue, ctx, adapter
     worker_thread = Thread(target=worker, args=worker_args)
     worker_thread.start()
 
