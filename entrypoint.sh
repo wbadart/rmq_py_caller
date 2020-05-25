@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -eo pipefail
 
 rabtap sub "$INPUT_QUEUE" --format=json-nopp \
   | jq -cr --unbuffered "$INPUT_ADAPTER" \
