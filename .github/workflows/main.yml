@@ -1,0 +1,18 @@
+name: CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+    - uses: dschep/install-poetry-action@v1.3
+    - name: Lint
+      run: |
+        poetry run black --check rmq_py_caller
+        poetry run pylint rmq_py_caller
