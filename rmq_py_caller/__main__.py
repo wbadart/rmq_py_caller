@@ -58,11 +58,13 @@ def main():
     if not is_context_manager(ctx):
         ctx = nullcontext(ctx)
 
+    # We'll send the adapter to the worker in a sec
+    adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
+    log.debug("Using ARG_ADAPTER: %s", adapter.program_string)
+
     # `worker` will run in a different thread so that it can keep at it while
     # we're blocked reading stdin. We'll send it inputs via a thread-safe
     # stdlib queue.Queue.
-    adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
-    log.debug("Using ARG_ADAPTER: %s", adapter.program_string)
     queue = Queue()
     worker_args = queue, ctx, adapter
     worker_thread = Thread(target=worker, args=worker_args)
