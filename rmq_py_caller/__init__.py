@@ -10,4 +10,4 @@ https://github.com/wbadart/rmq_py_caller
 created: MAY 2020
 """
 
-__version__ = '0.1.0'
+__version__ = "0.1.0"
