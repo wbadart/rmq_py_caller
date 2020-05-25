@@ -68,14 +68,16 @@ def main():
     worker_thread = Thread(target=worker, args=worker_args)
     worker_thread.start()
 
-    for line in sys.stdin:
-        log.debug("Read stdin line: %s", line)
-        payload = json.loads(line)
-        queue.put(payload)
-    # When there's no more input, tell `worker` to shutdown by sending `None`
-    queue.put(None)
-    worker_thread.join()
-    log.info("Goodbye from rmq_py_caller!")
+    try:
+        for line in sys.stdin:
+            log.debug("Read stdin line: %s", line)
+            payload = json.loads(line)
+            queue.put(payload)
+    finally:
+        # When there's no more input, tell `worker` to shutdown by sending `None`
+        queue.put(None)
+        worker_thread.join()
+        log.info("Goodbye from rmq_py_caller!")
 
 
 if __name__ == "__main__":
