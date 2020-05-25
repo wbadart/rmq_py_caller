@@ -1,5 +1,12 @@
 # rmq_py_caller
 
+[![CI](https://github.com/wbadart/rmq_py_caller/workflows/CI/badge.svg)][build]
+[![Docker Build Status](https://img.shields.io/docker/build/wbadart/rmq_py_caller)][docker]
+
+[build]: https://github.com/wbadart/rmq_py_caller/actions?query=workflow%3ACI
+[docker]: https://hub.docker.com/r/wbadart/rmq_py_caller
+
+
 Call a Python function on JSON from [RabbitMQ][rmq]. Supports [context
 managers][ctx] for resource management and [coroutines][coro] for getting
 fancy.
