@@ -85,7 +85,7 @@ Environment Variable | Description
 `RABTAP_AMQPURI`     | Location of broker (see the [`rabtap`][rabtap uri] URI spec)
 `INPUT_ADAPTER`      | (_Optional_) Adjusts how RabbitMQ metadata is passed to Python
 `OUTPUT_ADAPTER`     | (_Default: `.result`_) `jq` post-processing program
-`PUBLISH_NULL`       | (_Default: `0`) If `1`, publish `null` results too
+`PUBLISH_NULL`       | (_Default: `0`_) If `1`, publish `null` results too
 
 [rabtap uri]: https://github.com/jandelgado/rabtap#broker-uri-specification
 
