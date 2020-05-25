@@ -2,7 +2,7 @@
 name = "rmq_py_caller"
 version = "0.1.0"
 description = ""
-authors = ["Will Badart <badart_william@bah.com>"]
+authors = ["Will Badart <will@willbadart.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"

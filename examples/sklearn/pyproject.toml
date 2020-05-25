@@ -2,7 +2,7 @@
 name = "rmq_sklearn"
 version = "0.1.0"
 description = "Sample sklearn project for rmq_py_caller"
-authors = ["Will Badart <badart_william@bah.com>"]
+authors = ["Will Badart <will@willbadart.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
