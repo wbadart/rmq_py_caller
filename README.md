@@ -14,7 +14,7 @@ The simplest way to use rmq_py_caller is the CLI. To start, install the
 package:
 
 ```sh
-pip install git+https://github.com/Badart-William/rmq_py_caller.git
+pip install git+https://github.com/wbadart/rmq_py_caller.git
 ```
 
 You can now call the package directly from the command line with `python -m
