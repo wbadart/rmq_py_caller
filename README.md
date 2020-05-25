@@ -1,10 +1,12 @@
 # rmq_py_caller
 
 Call a Python function on JSON from [RabbitMQ][rmq]. Supports [context
-managers][ctx] for when the function needs setup or teardown.
+managers][ctx] for resource management and [coroutines][coro] for getting
+fancy.
 
-[ctx]: https://docs.python.org/3/library/contextlib.html
 [rmq]: https://www.rabbitmq.com
+[ctx]: https://docs.python.org/3/library/contextlib.html
+[coro]: https://docs.python.org/3/library/asyncio-task.html
 
 ## Usage
 
@@ -20,7 +22,7 @@ rmq_py_caller`, just make sure to set the following environment variables:
 
 Environment Variable | Description
 ---------------------|------------
-`PY_TARGET`   | The name of the function* to call
+`PY_TARGET`   | The name of the function or coroutine to call*
 `PY_SETUP`    | (_Optional_) Initialization code, such as importing the function
 `ARG_ADAPTER` | (_Default: `[.]`_) A [`jq`][jq] program mapping input data to `*args` list
 
@@ -28,9 +30,9 @@ Environment Variable | Description
 
 (* `PY_TARGET` can also identify a context manager, provided its `__enter__`
 method returns the function of interest. This is useful if the function
-requires some setup before running, such as loading a data file, or teardown
-afterwards. See [`examples/basic_contextmanager/`][basic_contextmanager] for
-details.)
+requires some setup before running &mdash; such as loading a data file &mdash;
+or teardown afterwards. See
+[`examples/basic_contextmanager/`][basic_contextmanager] for details.)
 
 [basic_contextmanager]: ./examples/basic_contextmanager
 
@@ -56,7 +58,7 @@ PY_SETUP='from operator import add' \
 
 This setup will, for each object in `data.ndjson`, compute the sum of the
 object's `a` and `b` attributes (corresponding to the call `add(obj["a"],
-obj["b"])`).
+obj["b"])`, aka `obj["a"] + obj["b"]`).
 
 [ndjson]: http://ndjson.org
 
@@ -91,10 +93,11 @@ docker run --rm -it \
     wbadart/rmq_py_caller
 ```
 
-will, for each array posted to the `data_in` queue, compute its length and
-publish the result to the `data_out` exchange. Note that inside a container,
-`host.docker.internal` resolves to the IP address of the Docker host; you can
-use it to access services you'd get via `localhost` outside the container.
+This says: for each array or object posted to the `data_in` queue, compute its
+length and publish the result to the `data_out` exchange. Note that inside a
+container, `host.docker.internal` resolves to the IP address of the Docker
+host; you can use it to access services you'd get via `localhost` outside the
+container.
 
 By default, rmq_py_caller publishes return value of `PY_TARGET` to the given
 `OUTPUT_EXCHANGE`. Use the `OUTPUT_ADAPTER` variable to customize the published
@@ -118,8 +121,8 @@ with the object `{enrichments: {num_keys: ...}}`.
 
 [merge]: https://stedolan.github.io/jq/manual/#Addition:+
 
-Finally, before I refer you to the `examples/` directory, here's a sample
-`docker-compose.yml` file you could use to run the above as a Docker service:
+Finally, here's a sample `docker-compose.yml` file you could use to run the
+above as a Docker service:
 
 ```yaml
 version: "3.4"
@@ -144,5 +147,5 @@ involved `OUTPUT_ADAPTER`s or `ARG_ADAPTER`s.
 
 [multi]: https://yaml-multiline.info
 
-Ok, that's it for the README. Please check out [`examples/`](./examples) for
-further instruction and inspiration.
+Please check out [`examples/`](./examples) for further instruction and
+inspiration.
