@@ -14,5 +14,6 @@ jobs:
     - uses: dschep/install-poetry-action@v1.3
     - name: Lint
       run: |
+        poetry install
         poetry run black --check rmq_py_caller
         poetry run pylint rmq_py_caller
