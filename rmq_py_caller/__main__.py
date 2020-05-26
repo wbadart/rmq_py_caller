@@ -6,14 +6,10 @@ lines of JSON from stdin.
 created: MAY 2020
 """
 
-import json
 import logging
 import sys
 from argparse import ArgumentParser
-from contextlib import nullcontext
 from os import environ
-from queue import Queue
-from threading import Thread
 
 import jq
 
