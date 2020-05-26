@@ -16,7 +16,7 @@ from concurrent.futures import ThreadPoolExecutor
 __all__ = ["worker"]
 
 
-def worker(inputs, ctx, adapter):
+def worker(inputs, ctx, adapter, fs_out=sys.stdout):
     """
     Enter `ctx` and call the resulting function on each message on the queue
     `inputs`.
@@ -73,7 +73,7 @@ def worker(inputs, ctx, adapter):
                 log.info("_printer got an awaitable. Awaiting it...")
                 result = await result
                 log.debug("Done!")
-            json.dump({"result": result, "orig": orig}, fp=sys.stdout)
-            print()
+            json.dump({"result": result, "orig": orig}, fp=fs_out)
+            fs_out.write("\n")
 
     asyncio.run(_main())
