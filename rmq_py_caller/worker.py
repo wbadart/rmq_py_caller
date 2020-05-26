@@ -7,6 +7,7 @@ created: MAY 2020
 """
 
 import asyncio
+import inspect
 import json
 import logging
 import sys
@@ -29,7 +30,7 @@ def worker(inputs, ctx, adapter):
         # `outbox` queue) to the _printer task, which will `await` and print
         # the reult.
         outbox = asyncio.Queue()
-        asyncio.create_task(_printer(outbox))
+        printer_task = asyncio.create_task(_printer(outbox))
 
         # Need a handle on the event loop for run_in_executor; see below
         loop = asyncio.get_running_loop()
@@ -60,6 +61,7 @@ def worker(inputs, ctx, adapter):
                 log.debug("PY_TARGET resulted in: %s", result)
                 await outbox.put((result, payload))
 
+            printer_task.cancel()
             log.info("Goodbye from rmq_py_caller worker!")
 
     async def _printer(inbox):
@@ -67,10 +69,10 @@ def worker(inputs, ctx, adapter):
         # me is a coroutine object, I'll wait on that too before printing.
         while True:
             result, orig = await inbox.get()
-            if asyncio.iscoroutine(result):
-                log.info("_printer got a coroutine. Awaiting it...")
+            if inspect.isawaitable(result):
+                log.info("_printer got an awaitable. Awaiting it...")
                 result = await result
-            log.info("Printing...")
+                log.debug("Done!")
             json.dump({"result": result, "orig": orig}, fp=sys.stdout)
             print()
 
