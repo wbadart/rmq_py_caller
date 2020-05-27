@@ -13,7 +13,7 @@ from os import environ
 
 import jq
 
-from rmq_py_caller.ioloop import main_loop
+from rmq_py_caller.app import main_loop
 
 
 def main():
