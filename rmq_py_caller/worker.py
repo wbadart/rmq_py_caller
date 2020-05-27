@@ -26,7 +26,7 @@ def worker(inputs, ctx, adapter, fs_out=sys.stdout):
     async def _main():
         # If `func` is a coroutine, we don't want to wait for it here; we want
         # to move on to the next input. We'll send it to `_printer` via
-        # `outbox` to await the result for us
+        # `outbox` to await the result for us and print it to `fs_out`.
         outbox = asyncio.Queue()
         printer_task = asyncio.create_task(_printer(outbox))
         loop = asyncio.get_running_loop()
@@ -39,28 +39,25 @@ def worker(inputs, ctx, adapter, fs_out=sys.stdout):
                 log.info("Waiting for payload...")
                 payload = await loop.run_in_executor(bg_thread, inputs.get)
                 log.debug("Got payload: %s", payload)
-
-                # We'll be sent `None` when it's time to shutdown
                 if payload is None:
-                    break
+                    break  # Receiving `None` means time to shut down
 
                 args = adapter.input(payload).first()  # call the jq program
-                log.debug("ARG_ADAPTER resulted in: %s", args)
                 result = func(*args)
-                log.debug("PY_TARGET resulted in: %s", result)
                 await outbox.put((result, payload))
+                log.debug("ARG_ADAPTER resulted in: %s", args)
+                log.debug("PY_TARGET resulted in: %s", result)
 
             printer_task.cancel()
             log.info("Goodbye from rmq_py_caller worker!")
 
     async def _printer(inbox):
-        # I just wait for _main to send me stuff to print
         while True:
             result, orig = await inbox.get()
             if inspect.isawaitable(result):
                 log.info("_printer got an awaitable. Awaiting it...")
                 result = await result
-                log.debug("Done!")
+                log.debug("Done! Got: %s", result)
             json.dump({"result": result, "orig": orig}, fp=fs_out)
             fs_out.write("\n")
 

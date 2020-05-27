@@ -26,26 +26,23 @@ def main_loop(ctx, adapter, fs_in=sys.stdin, fs_out=sys.stdout):
     """
     log = logging.getLogger(__name__)
 
-    # Our worker will use ctx in a `with` statement shortly (for resource
-    # management). If PY_TARGET is just a regular function, wrap it in the
-    # nullcontext so we can pretend it's a context manager
+    # If PY_TARGET is a regular function, wrap it in nullcontext so we can
+    # pretend it's a context manager (`worker` uses it in a `with` statement)
     if not _is_context_manager(ctx):
         ctx = nullcontext(ctx)
 
-    # `worker` will run in a different thread so that it can keep working while
-    # we're blocked reading `fs_in`. We'll send it inputs via thread-safe queue
-    queue = Queue()
-    worker_thread = Thread(target=worker, args=(queue, ctx, adapter, fs_out))
+    # `worker` gets its own thread so it can run while we're blocked reading `fs_in`
+    worker_inbox = Queue()
+    worker_thread = Thread(target=worker, args=(worker_inbox, ctx, adapter, fs_out))
     worker_thread.start()
-
     try:
         for line in fs_in:
-            log.debug("Read %s line: %s", getattr(fs_in, "name", fs_in), line)
+            log.debug("Read %s line: %s", fs_in, line)
             payload = json.loads(line)
-            queue.put(payload)
+            worker_inbox.put(payload)
     finally:
         # When there's no more input, tell `worker` to shutdown by sending `None`
-        queue.put(None)
+        worker_inbox.put(None)
         worker_thread.join()
         log.info("Goodbye from rmq_py_caller!")
 
