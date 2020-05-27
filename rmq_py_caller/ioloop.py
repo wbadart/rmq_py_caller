@@ -35,8 +35,7 @@ def main_loop(ctx, adapter, fs_in=sys.stdin, fs_out=sys.stdout):
     # `worker` will run in a different thread so that it can keep working while
     # we're blocked reading `fs_in`. We'll send it inputs via thread-safe queue
     queue = Queue()
-    worker_args = queue, ctx, adapter, fs_out
-    worker_thread = Thread(target=worker, args=worker_args)
+    worker_thread = Thread(target=worker, args=(queue, ctx, adapter, fs_out))
     worker_thread.start()
 
     try:
