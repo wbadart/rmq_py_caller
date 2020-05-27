@@ -1,8 +1,6 @@
 """rmq_pyctx_caller/__main__.py
 
-Load a context manager and call the callable its `__enter__` method returns on
-lines of JSON from stdin.
-
+Command line entry point. See `python -m rmq_py_caller --help` for details.
 created: MAY 2020
 """
 
@@ -17,8 +15,10 @@ from rmq_py_caller.app import main_loop
 
 
 def main():
-    """Setup PY_TARGET and call it on each line of JSON on stdin."""
-    parser = ArgumentParser(description=__doc__)
+    """Execute PY_SETUP (if set) and call PY_TARGET on JSON from stdin. See
+    https://github.com/wbadart/rmq_py_caller#readme for details.
+    """
+    parser = ArgumentParser(prog="python -m rmq_py_caller", description=main.__doc__)
     parser.add_argument(
         "-v",
         "--verbose",
@@ -43,7 +43,6 @@ def main():
     log.debug("Got PY_TARGET: %s", ctx)
     adapter = jq.compile(environ.get("ARG_ADAPTER", "[.]"))
     log.debug("Using ARG_ADAPTER: %s", adapter.program_string)
-
     main_loop(ctx, adapter, sys.stdin)
 
 
