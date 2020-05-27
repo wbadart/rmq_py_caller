@@ -24,38 +24,27 @@ def worker(inputs, ctx, adapter, fs_out=sys.stdout):
     log = logging.getLogger(__name__)
 
     async def _main():
-        # _main is responsible for calling func. However, sometimes func might
-        # be a coroutine, and _main doesn't wan't to `await` the result before
-        # moving onto the next queue item. Instead, send results (via the
-        # `outbox` queue) to the _printer task, which will `await` and print
-        # the reult.
+        # If `func` is a coroutine, we don't want to wait for it here; we want
+        # to move on to the next input. We'll send it to `_printer` via
+        # `outbox` to await the result for us
         outbox = asyncio.Queue()
         printer_task = asyncio.create_task(_printer(outbox))
-
-        # Need a handle on the event loop for run_in_executor; see below
         loop = asyncio.get_running_loop()
 
-        # Enter ctx to perform any setup for func, and guarantee teardown
         with ctx as func, ThreadPoolExecutor() as bg_thread:
             while True:
-                # `inputs` is a synchronous queue (stdlib queue.Queue) so .get
-                # would block the current thread. Running in a separate
-                # executor (bg_thread) allows this thread to stay unblocked, in
-                # turn allowing the loop to schedule other tasks while we await
-                # a payload
+                # `inputs` is a synchronous queue so calling `inputs.get` would
+                # block the current thread. Calling it in `bg_thread` allows
+                # our thread to stay unblocked
                 log.info("Waiting for payload...")
                 payload = await loop.run_in_executor(bg_thread, inputs.get)
                 log.debug("Got payload: %s", payload)
 
-                # rmq_py_caller.__main__.main will send us `None` when it's
-                # time to shutdown
+                # We'll be sent `None` when it's time to shutdown
                 if payload is None:
                     break
 
-                # Apply ARG_ADAPTER (which maps the input object to an array of
-                # args for PY_TARGET), call PY_TARGET, and send the result to
-                # the _printer
-                args = adapter.input(payload).first()
+                args = adapter.input(payload).first()  # call the jq program
                 log.debug("ARG_ADAPTER resulted in: %s", args)
                 result = func(*args)
                 log.debug("PY_TARGET resulted in: %s", result)
@@ -65,8 +54,7 @@ def worker(inputs, ctx, adapter, fs_out=sys.stdout):
             log.info("Goodbye from rmq_py_caller worker!")
 
     async def _printer(inbox):
-        # I just wait for _main to send me stuff to print. If what _main sends
-        # me is a coroutine object, I'll wait on that too before printing.
+        # I just wait for _main to send me stuff to print
         while True:
             result, orig = await inbox.get()
             if inspect.isawaitable(result):
