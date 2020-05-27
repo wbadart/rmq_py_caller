@@ -1,8 +1,6 @@
 """rmq_py_caller/app.py
 
-This is the "main loop" of rmq_py_caller which interacts with the blocking
-world of IO.
-
+Exports `main_loop`, which launches the rmq_py_caller application.
 created: MAY 2020
 """
 
@@ -20,11 +18,7 @@ __all__ = ["main_loop"]
 
 
 def main_loop(ctx, adapter, fs_in=sys.stdin, fs_out=sys.stdout):
-    """
-    Start a worker thread and send it inputs from `fs_in`. The worker will
-    enter `ctx` if it is a context manager and call the function its __enter__
-    method returns on the inputs we send from `fs_in`.
-    """
+    """Start a `worker` thread and send it inputs from `fs_in`."""
     log = logging.getLogger(__name__)
 
     # If PY_TARGET is a regular function, wrap it in nullcontext so we can
@@ -42,15 +36,13 @@ def main_loop(ctx, adapter, fs_in=sys.stdin, fs_out=sys.stdout):
             payload = json.loads(line)
             worker_inbox.put(payload)
     finally:
-        # When there's no more input, tell `worker` to shutdown by sending `None`
-        worker_inbox.put(None)
+        worker_inbox.put(None)  # Tell `worker` to shutdown by sending `None`
         worker_thread.join()
         log.info("Goodbye from rmq_py_caller!")
 
 
 def worker(inputs, ctx, adapter, fs_out=sys.stdout):
-    """Enter `ctx` and call the resulting function on each message from `inputs`.
-    """
+    """Enter `ctx` and call the resulting function on messages from `inputs`."""
     log = logging.getLogger(__name__)
 
     async def _main():
