@@ -33,8 +33,9 @@ def main_loop(ctx, adapter, fs_in=sys.stdin, fs_out=sys.stdout):
     try:
         for line in fs_in:
             log.debug("Read %s line: %s", fs_in, line)
-            payload = json.loads(line)
-            worker_inbox.put(payload)
+            if line:
+                payload = json.loads(line)
+                worker_inbox.put(payload)
     finally:
         worker_inbox.put(None)  # Tell `worker` to shutdown by sending `None`
         worker_thread.join()
