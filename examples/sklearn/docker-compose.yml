@@ -6,14 +6,46 @@ services:
     environment:
       PY_SETUP: "from rmq_sklearn.predict import setup_inference"
       PY_TARGET: "setup_inference(path='/models/tree.joblib')"
-      # Note the double '$' to prevent docker-compose from doing variable substitution
+      # This odd looking jq program is an example of enrichment over an array
+      # of objects. Note the double '$' to prevent docker-compose from doing
+      # variable substitution
       OUTPUT_ADAPTER: >-
         .orig as $$orig | .result as $$result |
         [ range(.result | length) | . as $$i |
             $$orig[$$i] * { Prediction: $$result[$$i] }
             ]
       INPUT_QUEUE: "data_in"
-      OUTPUT_EXCHANGE: "data_out"
+      OUTPUT_EXCHANGE: "amq.fanout"
+      RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"
+    volumes:
+    - ${PWD}/tree.joblib:/models/tree.joblib
+
+  # What if we're getting requests for fish species prediction from 2 different
+  # sources? These sources might not have the same idea of what our fish
+  # features are called or how they're represented. No problem! We just need to
+  # adapt the other expected input shape to our prediction interface.
+  #
+  # Above, we assumed the default schema from the original Kaggle dataset.
+  # Let's suppose we have a fish data service that puts the prefix `fish_` in
+  # front of the lower cased original field name. ARG_ADAPTER shows one of a
+  # couple ways to handle that (no changes to the model code needed).
+  fish_prediction_schema2:
+    build: .
+    image: fish_prediction
+    environment:
+      PY_SETUP: "from rmq_sklearn.predict import setup_inference"
+      PY_TARGET: "setup_inference(path='/models/tree.joblib')"
+      ARG_ADAPTER: >-
+        [[.[] | [ 
+          .fish_weight,
+          .fish_length1,
+          .fish_length2,
+          .fish_length3,
+          .fish_height,
+          .fish_width
+        ]]]
+      INPUT_QUEUE: "data_in2"
+      OUTPUT_EXCHANGE: "amq.fanout"
       RABTAP_AMQPURI: "amqp://guest:guest@host.docker.internal:5672/"
     volumes:
     - ${PWD}/tree.joblib:/models/tree.joblib

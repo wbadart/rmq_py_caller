@@ -40,8 +40,8 @@ docker-compose up
 ```
 
 Note: I'm counting on you already having a RabbitMQ server running on your
-`localhost` with a `data_in` queue, a `data_out` fanout exchange, and another
-queue bound to `data_out` with routing key `*`.
+`localhost` with `data_in` and `data_in2` queues. You should also bind a queue
+to `amq.fanout` to inspect results.
 
 Once you see:
 
@@ -53,7 +53,7 @@ Attaching to sklearn_fish_prediction_1
 
 try copying and pasting the contents of `sample.ndjson` to the **Publish
 message** section of `data_in`. Now click over to the queue you bound to
-`data_out`, **Get messages**, and see that your fish predictions have been
+`amq.fanout`, **Get messages**, and see that your fish predictions have been
 published.
 
 Final side note: as our fish prediction service gains users, we can scale
@@ -75,3 +75,41 @@ services:
 
 Each replica will be watching the same input queue, so messages to that queue
 will be naturally distributed among the 10 consumers.
+
+## Alternate Schema
+
+What if we're getting requests for fish predictions from multiple sources? More
+troubling, what if they have different ideas about how to represent a fish? No
+problem! We just need map the new input schema to the arguments `predict` is
+looking for. Let's say instead of
+
+```json
+{"Weight": 123, "Length1": 456, ...}
+```
+
+we have
+
+```json
+{"fish_weight": 321, "fish_length1": 654, ...}
+```
+
+There might even be extra fields. No worries. Looking at `predict.COLUMNS`, we
+see that the `predict` function wants the weight feature in the first column,
+length1 in the second, and so on.
+
+```yaml
+# ...
+ARG_ADAPTER: >-
+  [[.[] | [ 
+    .fish_weight,
+    .fish_length1,
+    .fish_length2,
+    .fish_length3,
+    .fish_height,
+    .fish_width,
+  ]]]
+# ...
+```
+
+You can test this arrangement by publishing the contents of
+[`data/sample.schema2.ndjson`](./data/sample.schema2.ndjson) to `data_in2`.
